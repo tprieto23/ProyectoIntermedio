@@ -44,60 +44,95 @@ void move_particle(int mol, int paso, int size, std::vector<int> & vector)
   }
 }
 
-void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep) {
-  if (Nmol != 0) {
-    std::mt19937 gen(seed);
-    
-    int mol = 0;
-    std::uniform_int_distribution<> dis_1{0, Nmol - 1};
+void step(std::mt19937 & gen, std::uniform_int_distribution<> & dis_1, std::uniform_int_distribution<> & dis_2, int size, std::vector<int> & vector, int Nmol)
+{
+  int mol = dis_1(gen);
+  int paso = dis_2(gen);
+  move_particle(mol, paso, size, vector);
+}
 
-    int paso = 0;
-    std::uniform_int_distribution<> dis_2{0, 4};
-    
-    std::cout.precision(6);
-    std::cout << 0 << "\t" << entropia(Nmol, vector) << "\n";
-    
-    for (int ii = 1; ii <= Nstep; ++ii) {
-      mol = dis_1(gen);
-      paso = dis_2(gen);
-      move_particle(mol, paso, size, vector);
-      
-      std::cout << ii << "\t" << entropia(Nmol, vector) << "\t"
-                << radius(Nmol, vector, size) << "\n";
-    }
+int find_t_eq(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep)
+{
+  std::mt19937 gen(seed);
+  
+  std::uniform_int_distribution<> dis_1{0, Nmol - 1};
+  std::uniform_int_distribution<> dis_2{0, 4};
+
+  double aux = entropia(Nmol, vector);
+  
+  for (int ii = 1; ii <= Nstep; ++ii) {
+    step(gen, dis_1, dis_2, size, vector, Nmol);
+    int aux = (entropia(Nmol, vector) < 1.5*std::log(size)) ? 0 : 1;
+    switch(aux)
+      {
+      case 0:
+	break;
+      case 1:
+	return ii;
+      }
+  }
+}
+
+void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep)
+{
+  std::mt19937 gen(seed);
+  
+  std::uniform_int_distribution<> dis_1{0, Nmol - 1};
+  std::uniform_int_distribution<> dis_2{0, 4};
+  
+  std::cout.precision(6);
+  std::cout << 0 << "\t" << entropia(Nmol, vector) << "\n";
+  
+  for (int ii = 1; ii <= Nstep; ++ii) {
+    step(gen, dis_1, dis_2, size, vector, Nmol);
+    std::cout << ii << "\t"
+	      << entropia(Nmol, vector) << "\t"
+	      << radius(Nmol, vector, size) << "\n";
   }
 }
 
 // Calcula la entropia de cierta configuracion de las particulas
-double entropia(int Nmol, std::vector<int> &vector) {
-  std::sort(vector.begin(),
-            vector.end()); // ordena los valores del vector para que los que son
-                           // iguales queden contiguos
+double entropia(int Nmol, std::vector<int> & vector) {
+
+  std::sort(vector.begin(), vector.end()); // ordena los valores del vector para que los que son// iguales queden contiguos
+  
   double sum = 0;
   double aux = 1;
-  for (int ii = 0; ii < Nmol - 1; ++ii) {
-    if (vector[ii] != vector[ii + 1]) {
-      aux = aux / Nmol;
-      sum -= aux * (std::log(aux));
-      aux = 1;
-    } else {
-      aux += 1;
-    }
+  for (int ii = 0; ii < Nmol; ++ii) {
+    if(ii != (Nmol - 1))
+      {
+	if (vector[ii] != vector[ii + 1])
+	  {
+	    aux = aux / Nmol;
+	    sum -= aux * (std::log(aux));
+	    aux = 1;
+	  }
+	else
+	  {
+	    aux += 1;
+	  }
+      }
+    else
+      {
+	aux = aux/Nmol;
+	sum -= aux*(std::log(aux));
+      }
   }
-  aux = aux / Nmol;
-  sum -= aux * (std::log(aux));
+  
   return sum;
 }
 
 // Calcula el radio de difusion de la crema de cafe
-double radius(int Nmol, std::vector<int> &vector, int size) {
+double radius(int Nmol, std::vector<int> & vector, int size)
+{
   double r = 0;
-  for (int ii = 0; ii < Nmol; ++ii) {
-    int x = (vector[ii] / size) - ((size - 1) / 2);
-    int y = (vector[ii] % size) - ((size - 1) / 2);
-    r += std::pow(x - 0.5, 2) + std::pow(y - 0.5, 2);
-  }
-  r = r / Nmol;
+  for (int ii = 0; ii < Nmol; ++ii)
+    {
+      int x = (vector[ii] / size) - ((size - 1) / 2);
+      int y = (vector[ii] % size) - ((size - 1) / 2);
+      r += std::pow(x - 0.5, 2) + std::pow(y - 0.5, 2);
+    }
+  r = r/Nmol;
   return std::sqrt(r);
 }
 
