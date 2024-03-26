@@ -11,7 +11,7 @@ void cuatro_cuadros_centrados(int Nmol, int size, std::vector<int> & vector, int
 
 void move_particle(int mol, int paso, int size, std::vector<int> & vector);
 
-void step(std::mt19937 & gen, std::uniform_int_distribution<> & dis_1, std::uniform_int_distribution<> & dis_2, int size, std::vector<int> & vector, int Nmol);
+void step(std::mt19937 & gen, std::uniform_int_distribution<> & dis_1, std::uniform_int_distribution<> & dis_2, int size, std::vector<int> & vector);
 
 int find_t_eq(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep);
 

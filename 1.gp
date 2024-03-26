@@ -1,5 +1,6 @@
-set terminal pngcairo enhanced font 'Verdana,12'
-set output '1.png'
+set log x
+set terminal pdf enhanced font 'Verdana,12'
+set output '1.pdf'
 
 unset key
 
