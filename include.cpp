@@ -11,7 +11,7 @@ void cuatro_cuadros_centrados(int Nmol, int size, std::vector<int> &vector, int 
 {
   std::mt19937 gen(seed);
   std::uniform_int_distribution<> dis{0, 1};
-  int esquina = size/2 - 1;
+  int esquina = (size - 1)/2;
   for (int n = 0; n < Nmol; n++) {
     int i = 0, j = 0;
     i = esquina + dis(gen);
@@ -51,12 +51,12 @@ int find_t_eq(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep
   std::mt19937 gen(seed);
   
   std::uniform_int_distribution<> dis_1{0, Nmol - 1};
-  std::uniform_int_distribution<> dis_2{1, 4};
+  std::uniform_int_distribution<> dis_2{0, 4};
   
   for (int ii = 1; ii <= Nstep; ++ii)
     {
       step(gen, dis_1, dis_2, size, vector);
-      int aux = ((entropia(Nmol, vector) < 1.5*std::log(size - 1)) ? 0 : 1);
+      int aux = ((entropia(Nmol, vector) < 1.5*std::log(size-1)) ? 0 : 1);
       switch(aux)
 	{
 	case 0:

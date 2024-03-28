@@ -8,4 +8,4 @@ set xlabel 'time'
 set ylabel 'Entropy'
 set title 'Entropy versus time'
 
-plot '1.txt' with linespoints
+plot '1.txt' with lp
