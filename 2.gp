@@ -1,3 +1,4 @@
+set fit logfile '2.log'
 f(x) = a*x**2 + b*x
 #f(x) = c*x**2
 fit f(x) "2.txt" via a, b

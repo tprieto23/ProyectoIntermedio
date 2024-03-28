@@ -1,5 +1,11 @@
 #include "include.h"
 #include <iostream>
+#include <fstream>
+
+void print_results(std::ofstream & output, auto x, auto y)
+{
+  output << x << "\t" << y << "\n";
+}
 
 void cuatro_cuadros_centrados(int Nmol, int size, std::vector<int> &vector, int seed)
 {
@@ -16,20 +22,21 @@ void cuatro_cuadros_centrados(int Nmol, int size, std::vector<int> &vector, int 
 
 void move_particle(int mol, int paso, int size, std::vector<int> & vector)
 {
-  switch(paso) {
-  case 1:
-    (vector[mol]/size != 0) ? (vector[mol] -= size) : (vector[mol] += (size - 1) * size);
-    break;
-  case 2:
-    (vector[mol]/size != size - 1) ? (vector[mol] += size) : (vector[mol] = vector[mol]%size);
-    break;
-  case 3:
-    (vector[mol] % size != 0) ? (vector[mol] -= 1) : (vector[mol] += size - 1);
-    break;
-  case 4:
-    (vector[mol] % size != size - 1) ? (vector[mol] += 1) : (vector[mol] = size * (vector[mol] / size));
-    break;
-  }
+  switch(paso)
+    {
+    case 1:
+      (vector[mol]/size != 0) ? (vector[mol] -= size) : (vector[mol] += (size - 1) * size);
+      break;
+    case 2:
+      (vector[mol]/size != size - 1) ? (vector[mol] += size) : (vector[mol] = vector[mol]%size);
+      break;
+    case 3:
+      (vector[mol] % size != 0) ? (vector[mol] -= 1) : (vector[mol] += size - 1);
+      break;
+    case 4:
+      (vector[mol] % size != size - 1) ? (vector[mol] += 1) : (vector[mol] = size * (vector[mol] / size));
+      break;
+    }
 }
 
 void step(std::mt19937 & gen, std::uniform_int_distribution<> & dis_1, std::uniform_int_distribution<> & dis_2, int size, std::vector<int> & vector)
@@ -49,7 +56,7 @@ int find_t_eq(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep
   for (int ii = 1; ii <= Nstep; ++ii)
     {
       step(gen, dis_1, dis_2, size, vector);
-      int aux = ((entropia(Nmol, vector) < 0.75*std::log((size - 1)*size)) ? 0 : 1);
+      int aux = ((entropia(Nmol, vector) < 1.5*std::log(size - 1)) ? 0 : 1);
       switch(aux)
 	{
 	case 0:
@@ -58,56 +65,72 @@ int find_t_eq(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep
 	  return ii;
 	}
     }
+  return -1;
 }
 
-void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep)
+void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep, std::ofstream & output, int point)
 {
   std::mt19937 gen(seed);
   
   std::uniform_int_distribution<> dis_1{0, Nmol - 1};
   std::uniform_int_distribution<> dis_2{0, 4};
   
-  std::cout.precision(6);
-  std::cout << 0 << "\t" << entropia(Nmol, vector) << "\n";
-  
-  for (int ii = 1; ii <= Nstep; ++ii) {
-    step(gen, dis_1, dis_2, size, vector);
-    if(ii%100 == 0)
+  switch(point)
     {
-      std::cout << ii << "\t"
-		<< entropia(Nmol, vector) << "\t"
-		<< radius(Nmol, vector, size) << "\n";
+    case 1:
+      print_results(output, 0, entropia(Nmol, vector));
+      break;
+    case 3:
+      print_results(output, 0, radius(Nmol, vector, size));
+      break;
     }
-  }
+  
+  for (int ii = 1; ii <= Nstep; ++ii)
+    {
+      step(gen, dis_1, dis_2, size, vector);
+      if(ii%100 == 0)
+	{
+	  switch(point)
+	    {
+	    case 1:
+	      print_results(output, ii, entropia(Nmol, vector));
+	      break;
+	    case 3:
+	      print_results(output, ii, radius(Nmol, vector, size));
+	      break;
+	    }
+	}
+    }
 }
 
-double entropia(int Nmol, std::vector<int> & vector) {
-  
+double entropia(int Nmol, std::vector<int> & vector)
+{  
   std::sort(vector.begin(), vector.end());
-
+  
   double sum = 0;
   double aux = 1;
   
-  for (int ii = 0; ii < Nmol; ++ii) {
-    if(ii != (Nmol - 1))
-      {
-	if (vector[ii] != vector[ii + 1])
-	  {
-	    aux = aux / Nmol;
-	    sum -= aux * (std::log(aux));
-	    aux = 1;
-	  }
-	else
-	  {
-	    aux += 1;
-	  }
-      }
-    else
-      {
+  for (int ii = 0; ii < Nmol; ++ii)
+    {
+      if(ii != (Nmol - 1))
+	{
+	  if (vector[ii] != vector[ii + 1])
+	    {
+	      aux = aux / Nmol;
+	      sum -= aux * (std::log(aux));
+	      aux = 1;
+	    }
+	  else
+	    {
+	      aux += 1;
+	    }
+	}
+      else
+	{
 	aux = aux/Nmol;
 	sum -= aux*(std::log(aux));
       }
-  }
+    }
   return sum;
 }
 
@@ -124,42 +147,25 @@ double radius(int Nmol, std::vector<int> & vector, int size)
   return std::sqrt(r);
 }
 
-void with_hole(int size, std::vector<int> &vector, int seed, int Nstep, int ratio)
+void move_with_hole(int mol, int paso, int size, std::vector<int> & vector, int ratio, int & numero)
 {
-  std::mt19937 gen(seed);
-  int numero = vector.size();
-  std::uniform_int_distribution<> dis_1{0, numero - 1};
-  int mol = 0;
-  std::uniform_int_distribution<> dis_2{0, 4};
-  int paso = 0;
-  for (int ii = 1; ii <= Nstep; ++ii) {
-    mol = dis_1(gen);
-    if (numero == 0)
-      {
-	break;
-      }
-    if(mol > numero - 1)
-      {
-	continue;
-      } // Se siguen contando pasos por las moleculas afuera
-    paso = dis_2(gen);
-    switch(paso)
-      {
-      case 1:
-	(vector[mol] / size != 0) ? (vector[mol] += -size) : (vector[mol] += (size - 1) * size);
-	break;
-      case 2:
-	(vector[mol] / size != size - 1) ? (vector[mol] += size) : (vector[mol] = vector[mol] % size);
-	break;
-      case 3:
-	(vector[mol] % size != 0) ? (vector[mol] += -1) : (vector[mol] += size - 1);
-	break;
-      case 4:
-	if (vector[mol] % size != size - 1)
-	  vector[mol] += 1; // le voy a dar en la cara marica
-	else
+  switch(paso)
+    {
+    case 1:
+      (vector[mol] / size != 0) ? (vector[mol] += -size) : (vector[mol] += (size - 1) * size);
+      break;
+    case 2:
+      (vector[mol] / size != size - 1) ? (vector[mol] += size) : (vector[mol] = vector[mol] % size);
+      break;
+    case 3:
+      (vector[mol] % size != 0) ? (vector[mol] += -1) : (vector[mol] += size - 1);
+      break;
+    case 4:
+      if (vector[mol] % size != size - 1)
+	vector[mol] += 1; // le voy a dar en la cara marica
+      else
 	  {
-	    if ((size - 1 - size / ratio) <= vector[mol] / size <= size - 1)
+	    if (((size - 1 - size/ratio) <= vector[mol]/size) && (vector[mol]/size <= size - 1))
 	      {
 		vector.erase(vector.begin() + mol); // sale por la derecha
 		numero = vector.size();
@@ -167,8 +173,41 @@ void with_hole(int size, std::vector<int> &vector, int seed, int Nstep, int rati
 	    else
 	      vector[mol] = size * (vector[mol] / size);
 	  }
-	break;
-      }
-    std::cout << ii << "\t" << numero << "\n";
-  }
+      break;
+    }
+}
+
+void step_with_hole(std::mt19937 & gen, std::uniform_int_distribution<> & dis_1, std::uniform_int_distribution<> & dis_2, int size, std::vector<int> & vector, int ratio, int & numero)
+{
+  int mol = dis_1(gen);
+  int paso = dis_2(gen);
+  if(mol <= numero - 1)
+    {
+      move_with_hole(mol, paso, size, vector, ratio, numero);
+    }
+}
+
+void with_hole(int size, std::vector<int> &vector, int seed, int Nstep, int ratio, std::ofstream & output)
+{
+  std::mt19937 gen(seed);
+  int numero = vector.size();
+  int aux = numero;
+  std::uniform_int_distribution<> dis_1{0, numero - 1};
+  std::uniform_int_distribution<> dis_2{0, 4};
+  for (int ii = 1; ii <= Nstep; ++ii)
+    {
+      if(numero >= 2)
+	{
+	  step_with_hole(gen, dis_1, dis_2, size, vector, ratio, numero);
+	}
+      else
+	{
+	  break;
+	}
+      if((ii > 5000) && (aux != numero))
+	{
+	  print_results(output, ii, numero);
+	  aux = numero;
+	}
+    }
 }
