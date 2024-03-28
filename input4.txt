@@ -1,5 +1,5 @@
-400
-50
-1000000
-0
-5 #ratio400
+400	#nmolecules
+20	#latticesize
+1000000	#niterations
+0	#randomgeneratorseed
+5	#ratio

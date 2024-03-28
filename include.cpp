@@ -162,12 +162,12 @@ void move_with_hole(int mol, int paso, int size, std::vector<int> & vector, int 
       break;
     case 4:
       if (vector[mol] % size != size - 1)
-	vector[mol] += 1; // le voy a dar en la cara marica
+	vector[mol] += 1;
       else
 	  {
 	    if (((size - 1 - size/ratio) <= vector[mol]/size) && (vector[mol]/size <= size - 1))
 	      {
-		vector.erase(vector.begin() + mol); // sale por la derecha
+		vector.erase(vector.begin() + mol);
 		numero = vector.size();
 	      }
 	    else

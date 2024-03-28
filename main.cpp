@@ -14,26 +14,19 @@ int main(void)
   int Nstep = 0;
   int seed = 0;
 
-  //Lectura desde el archivo input.txt
   std::ifstream input;
   input.open("input.txt");
-  input >> Nmol >> size >> Nstep >> seed;//40 20 1000000 0
+  input >> Nmol >> size >> Nstep >> seed;
   input.close();
   
-  //Las componentes del vector contienen las posiciones
-  //de cada particula
-  std::vector<int> particles{0}; //inicializa el vector
+  std::vector<int> particles{0};
   particles.resize(Nmol);
-  
-  //Ubica las particulas aleatoriamente en su distribucion inicial
-  //cerca al centro de la taza
+
   cuatro_cuadros_centrados(Nmol, size, particles, seed);
   
   std::ofstream output1;
   output1.open("1.txt");
   
-  //Se realizan todos los pasos de la difusion y en cada uno se
-  //imprime el paso, la entropia total y el radio de difusion
   evolution(Nmol, size, particles, seed, Nstep, output1, 1);
 
   output1.close();
@@ -44,7 +37,7 @@ int main(void)
   
   std::ifstream input2;
   input2.open("input.txt");
-  input2 >> Nmol >> size >> Nstep >> seed;//40 20 1000000 0
+  input2 >> Nmol >> size >> Nstep >> seed;
   input2.close();
   
   particles = {0};
@@ -75,25 +68,19 @@ int main(void)
   ////////////////////////////////////////////////////////////////////////
 
   int ratio = 0;
-  //Lectura desde el archivo input.txt
+
   std::ifstream input4;
   input4.open("input4.txt");
   input4 >> Nmol >> size >> Nstep >> seed >> ratio;
   input4.close();
   
-  //Las componentes del vector contienen las posiciones
-  //de cada particula
   particles = {0};
   particles.resize(Nmol);
 
-  //Ubica las particulas aleatoriamente en su distribucion inicial
-  //cerca al centro de la taza
   cuatro_cuadros_centrados(Nmol, size, particles, seed);
 
   std::ofstream output4("4.txt", std::ios::out);
 
-  //Se realizan todos los pasos de la difusion y en cada uno se
-  //imprime el paso, la entropia total y el radio de difusion
   with_hole(size, particles, seed, Nstep, ratio, output4);
 
   output4.close();  
