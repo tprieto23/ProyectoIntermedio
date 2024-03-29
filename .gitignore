@@ -1,2 +1,17 @@
 # old README
 README
+# executables
+*.o
+*.x
+# text files generated at excecution
+1.txt
+2.txt
+4.txt
+# some other files generated at execution
+*.png
+*.log
+*.pdf
+test.txt
+cachegrind.out.*
+gprof.txt
+*.out
