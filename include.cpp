@@ -98,7 +98,8 @@ void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nste
             print_results(output, ii, entropia(Nmol, vector));
             break;
           case 3:
-            print_results(output, ii, radius(Nmol, vector, size));
+            double area = M_PI*std::pow(radius(Nmol, vector, size),2);
+            print_results(output, ii, area);
             break;
         }
       }
