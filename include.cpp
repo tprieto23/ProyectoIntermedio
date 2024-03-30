@@ -78,13 +78,18 @@ void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nste
   std::uniform_int_distribution<> dis_1{0, Nmol - 1};
   std::uniform_int_distribution<> dis_2{0, 4};
   
+  // double cup_size = std::pow(size,2); //area of the squared cup
+  double cup_size = M_PI * std::pow(size,2); //area of the circumscribed circle in the squared cup 
+  double drop_size = 0.0;
+
   switch(point){
     case 1:
       print_results(output, 0, entropia(Nmol, vector));
       break;
 
     case 3:
-      print_results(output, 0, radius(Nmol, vector, size));
+      drop_size = M_PI*std::pow(radius(Nmol, vector, size),2);
+      print_results(output, 0, drop_size);
       break;
     }
   
@@ -98,8 +103,9 @@ void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nste
             print_results(output, ii, entropia(Nmol, vector));
             break;
           case 3:
-            double area = M_PI*std::pow(radius(Nmol, vector, size),2);
-            print_results(output, ii, area);
+            drop_size = M_PI*std::pow(radius(Nmol, vector, size),2);
+ 
+            print_results(output, ii, drop_size);
             break;
         }
       }
