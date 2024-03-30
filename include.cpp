@@ -2,7 +2,8 @@
 #include <iostream>
 #include <fstream>
 
-void print_results(std::ofstream & output, auto x, auto y)
+template<typename T, typename U>
+void print_results(std::ofstream & output, T x, U y)
 {
   output << x << "\t" << y << "\n";
 }
