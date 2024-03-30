@@ -8,7 +8,7 @@
 #include <cmath>
 
 template<typename T, typename U>
-void print_results(std::ofstream & output, T x, T y);
+void print_results(std::ofstream & output, T x, U y);
 
 void cuatro_cuadros_centrados(int Nmol, int size, std::vector<int> & vector, int seed);
 
