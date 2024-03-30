@@ -13,10 +13,12 @@ void cuatro_cuadros_centrados(int Nmol, int size, std::vector<int> &vector, int 
   std::mt19937 gen(seed);
   std::uniform_int_distribution<> dis{0, 1};
   int esquina = (size - 1)/2;
+  
   for (int n = 0; n < Nmol; n++) {
     int i = 0, j = 0;
     i = esquina + dis(gen);
     j = esquina + dis(gen);
+    
     vector[n] = i*size + j;
   }
 }
@@ -54,17 +56,17 @@ int find_t_eq(int Nmol, int size, std::vector<int> & vector, int seed, int Nstep
   std::uniform_int_distribution<> dis_1{0, Nmol - 1};
   std::uniform_int_distribution<> dis_2{0, 4};
   
-  for (int ii = 1; ii <= Nstep; ++ii)
-    {
-      step(gen, dis_1, dis_2, size, vector);
-      int aux = ((entropia(Nmol, vector) < 1.5*std::log(size-1)) ? 0 : 1);
-      switch(aux)
-	{
-	case 0:
-	  break;
-	case 1:
-	  return ii;
-	}
+  for (int ii = 1; ii <= Nstep; ++ii){
+    step(gen, dis_1, dis_2, size, vector);
+    int aux = ((entropia(Nmol, vector) < 1.5*std::log(size-1)) ? 0 : 1);
+    switch(aux)
+      {
+        case 0:
+          break;
+
+        case 1:
+          return ii;
+      }
     }
   return -1;
 }
@@ -76,31 +78,30 @@ void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nste
   std::uniform_int_distribution<> dis_1{0, Nmol - 1};
   std::uniform_int_distribution<> dis_2{0, 4};
   
-  switch(point)
-    {
+  switch(point){
     case 1:
       print_results(output, 0, entropia(Nmol, vector));
       break;
+
     case 3:
       print_results(output, 0, radius(Nmol, vector, size));
       break;
     }
   
-  for (int ii = 1; ii <= Nstep; ++ii)
-    {
-      step(gen, dis_1, dis_2, size, vector);
-      if(ii%100 == 0)
-	{
-	  switch(point)
-	    {
-	    case 1:
-	      print_results(output, ii, entropia(Nmol, vector));
-	      break;
-	    case 3:
-	      print_results(output, ii, radius(Nmol, vector, size));
-	      break;
-	    }
-	}
+  for (int ii = 1; ii <= Nstep; ++ii){
+    step(gen, dis_1, dis_2, size, vector);
+    
+    if(ii%100 == 0){
+      switch(point)
+        {
+          case 1:
+            print_results(output, ii, entropia(Nmol, vector));
+            break;
+          case 3:
+            print_results(output, ii, radius(Nmol, vector, size));
+            break;
+        }
+      }
     }
 }
 
@@ -111,25 +112,23 @@ double entropia(int Nmol, std::vector<int> & vector)
   double sum = 0;
   double aux = 1;
   
-  for (int ii = 0; ii < Nmol; ++ii)
-    {
-      if(ii != (Nmol - 1))
-	{
-	  if (vector[ii] != vector[ii + 1])
-	    {
-	      aux = aux / Nmol;
-	      sum -= aux * (std::log(aux));
-	      aux = 1;
-	    }
-	  else
-	    {
-	      aux += 1;
-	    }
-	}
+  for (int ii = 0; ii < Nmol; ++ii){
+    if(ii != (Nmol - 1)){
+      if (vector[ii] != vector[ii + 1])
+        {
+          aux = aux / Nmol;
+          sum -= aux * (std::log(aux));
+          aux = 1;
+        }
       else
-	{
-	aux = aux/Nmol;
-	sum -= aux*(std::log(aux));
+        {
+          aux += 1;
+        }
+      }
+    else
+      {    
+        aux = aux/Nmol;
+        sum -= aux*(std::log(aux));
       }
     }
   return sum;
@@ -138,20 +137,21 @@ double entropia(int Nmol, std::vector<int> & vector)
 double radius(int Nmol, std::vector<int> & vector, int size)
 {
   double r = 0.0;
-  for (int ii = 0; ii < Nmol; ++ii)
-    {
-      int x = (vector[ii]/size) - (size/2) + 1;
-      int y = (vector[ii]%size) - (size/2) + 1;
-      r += std::pow(x, 2) + std::pow(y, 2);
+  for (int ii = 0; ii < Nmol; ++ii){
+    int x = (vector[ii]/size) - (size/2) + 1;
+    int y = (vector[ii]%size) - (size/2) + 1;
+    
+    r += std::pow(x, 2) + std::pow(y, 2);
     }
+  
   r = r/Nmol;
+  
   return std::sqrt(r);
 }
 
 void move_with_hole(int mol, int paso, int size, std::vector<int> & vector, int ratio, int & numero)
 {
-  switch(paso)
-    {
+  switch(paso){
     case 1:
       (vector[mol] / size != 0) ? (vector[mol] += -size) : (vector[mol] += (size - 1) * size);
       break;
@@ -163,17 +163,17 @@ void move_with_hole(int mol, int paso, int size, std::vector<int> & vector, int 
       break;
     case 4:
       if (vector[mol] % size != size - 1)
-	vector[mol] += 1;
+	      vector[mol] += 1;
       else
-	  {
-	    if (((size - 1 - size/ratio) <= vector[mol]/size) && (vector[mol]/size <= size - 1))
-	      {
-		vector.erase(vector.begin() + mol);
-		numero = vector.size();
-	      }
-	    else
-	      vector[mol] = size * (vector[mol] / size);
-	  }
+	    {
+	      if (((size - 1 - size/ratio) <= vector[mol]/size) && (vector[mol]/size <= size - 1))
+	        {
+            vector.erase(vector.begin() + mol);
+            numero = vector.size();
+	        }
+	      else
+	        vector[mol] = size * (vector[mol] / size);
+	    }
       break;
     }
 }
@@ -198,17 +198,19 @@ void with_hole(int size, std::vector<int> &vector, int seed, int Nstep, int rati
   for (int ii = 1; ii <= Nstep; ++ii)
     {
       if(numero >= 2)
-	{
-	  step_with_hole(gen, dis_1, dis_2, size, vector, ratio, numero);
-	}
+      {
+        step_with_hole(gen, dis_1, dis_2, size, vector, ratio, numero);
+      }
+      
       else
-	{
-	  break;
-	}
+      {
+        break;
+      }
+      
       if((ii > 5000) && (aux != numero))
-	{
-	  print_results(output, ii, numero);
-	  aux = numero;
-	}
+      {
+        print_results(output, ii, numero);
+        aux = numero;
+      }
     }
 }
