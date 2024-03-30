@@ -1,8 +1,11 @@
 main: main.x input.txt input4.txt
 	./$<
 
-main.x: main.cpp include.cpp
+main.x: main.o include.o
 	g++ -std=c++20 -O3 -g -Wall -fsanitize=address,undefined,leak $^ -o $@
+
+main.o: main.cpp include.cpp
+	g++ -c $^
 
 1: 1.gp 1.txt
 	gnuplot 1.gp
