@@ -28,7 +28,7 @@ int main(void)
   output1.open("1.txt");
   
   evolution(Nmol, size, particles, seed, Nstep, output1, 1);
-
+  
   output1.close();
 
   ////////////////////////////////////////////////////////////////////////
@@ -57,11 +57,32 @@ int main(void)
       particles.resize(Nmol);
       cuatro_cuadros_centrados(Nmol, ii, particles, seed);	
       t = find_t_eq(Nmol, ii, particles, seed, Nstep);
-      //print_results(output2, ii, t);
-      output2 << ii << "\t" << t << "\n";
+      print_results(output2, ii, t);
+      // output2 << ii << "\t" << t << "\n";
     }
 
   output2.close();
+
+  ////////////////////////////////////////////////////////////////////////
+  //////////////////////// 3rd point /////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+
+  std::ifstream input3;
+  input3.open("input.txt");
+  input3 >> Nmol >> size >> Nstep >> seed;
+  input3.close();
+
+  particles = {0};
+  particles.resize(Nmol);
+
+  cuatro_cuadros_centrados(Nmol, size, particles, seed);
+
+  std::ofstream output3;
+  output3.open("3.txt");
+
+  evolution(Nmol, size, particles, seed, Nstep, output3, 3);
+
+  output3.close();
 
   ////////////////////////////////////////////////////////////////////////
   //////////////////////// 4th point /////////////////////////////////////

@@ -78,9 +78,13 @@ void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nste
   std::uniform_int_distribution<> dis_1{0, Nmol - 1};
   std::uniform_int_distribution<> dis_2{0, 4};
   
-  // double cup_size = std::pow(size,2); //area of the squared cup
-  double cup_size = M_PI * std::pow(size,2); //area of the circumscribed circle in the squared cup 
+  // case 3 stuff
+  // double cup_size = std::pow(size,2); // area of the squared cup
+  double cup_size = M_PI * std::pow(size/2.0,2); // area of the circumscribed circle in the squared cup 
+  // double cup_size = 200.0;
   double drop_size = 0.0;
+  int t_fill = 0;
+  bool done = false;
 
   switch(point){
     case 1:
@@ -92,7 +96,7 @@ void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nste
       print_results(output, 0, drop_size);
       break;
     }
-  
+
   for (int ii = 1; ii <= Nstep; ++ii){
     step(gen, dis_1, dis_2, size, vector);
     
@@ -102,22 +106,34 @@ void evolution(int Nmol, int size, std::vector<int> & vector, int seed, int Nste
           case 1:
             print_results(output, ii, entropia(Nmol, vector));
             break;
+          
           case 3:
+          // checks when the drop fills the cup
+            if (done == false){
+              if(drop_size <= cup_size){
+                t_fill = ii;
+              }
+              else
+                done = true;
+            }
+
             drop_size = M_PI*std::pow(radius(Nmol, vector, size),2);
- 
             print_results(output, ii, drop_size);
+
             break;
         }
       }
     }
+    output << 9876543 << "\t" << t_fill;
+    output << "\n#The second column of this last value corresponds to the time when the drop fills the cup";
 }
 
 double entropia(int Nmol, std::vector<int> & vector)
 {  
   std::sort(vector.begin(), vector.end());
   
-  double sum = 0;
-  double aux = 1;
+  double sum = 0.0;
+  double aux = 1.0;
   
   for (int ii = 0; ii < Nmol; ++ii){
     if(ii != (Nmol - 1)){
@@ -125,11 +141,11 @@ double entropia(int Nmol, std::vector<int> & vector)
         {
           aux = aux / Nmol;
           sum -= aux * (std::log(aux));
-          aux = 1;
+          aux = 1.0;
         }
       else
         {
-          aux += 1;
+          aux += 1.0;
         }
       }
     else
