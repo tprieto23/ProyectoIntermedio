@@ -31,10 +31,10 @@ Retorna: Nada.
 ## `cuatro_cuadros_centrados`:
 Genera las condiciones iniciales para una crema ubicada en las cuatro posiciones centrales de la taza. Las moléculas son puestas en alguna de dichas cuatro casillas de forma aleatoria.
 Recibe:
-- La cantidad de moléculas de crema en el café. Tiene un valor entero y se etiqueta como 'Nmol'.
-- La longitud del lado de la taza de café (se modela una taza cuadrada). Tiene valor entero y se etiqueta como 'size'.
-- El vector que almacena la información respecto a posición de cada molécula de crema. Es pasado por referencia pues inicialmente el vector tiene todos los valores en cero y la función debe cambiar dichos valores de acuerdo a la condición inicial. Se etiqueta como 'vector'.
-- La semilla para la generación de números aleatorios. Es un entero y se etiqueta como 'seed'.
+- La cantidad de moléculas de crema en el café. Tiene un valor entero y se etiqueta como `Nmol`.
+- La longitud del lado de la taza de café (se modela una taza cuadrada). Tiene valor entero y se etiqueta como `size`.
+- El vector que almacena la información respecto a posición de cada molécula de crema. Es pasado por referencia pues inicialmente el vector tiene todos los valores en cero y la función debe cambiar dichos valores de acuerdo a la condición inicial. Se etiqueta como `vector`.
+- La semilla para la generación de números aleatorios. Es un entero y se etiqueta como `seed`.
 
 Retorna: Nada.
 
