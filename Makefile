@@ -13,6 +13,9 @@ main.o: main.cpp include.cpp
 2: 2.gp 2.txt
 	gnuplot 2.gp
 
+3: 3.gp 3.txt
+	gnuplot 3.gp
+
 4: 4.gp 4.txt
 	gnuplot 4.gp
 
@@ -39,4 +42,4 @@ memcheck: memcheck.x
 	valgrind --tool=memcheck --leak-check=yes ./$<
 
 clean:
-	rm *.x 1.txt *~ *.o 2.txt 4.txt *.png *.log *.pdf test.txt cachegrind.out.* gprof.txt *.out
+	rm *.x 1.txt *~ *.o 2.txt 3.txt 4.txt *.png *.log *.pdf test.txt cachegrind.out.* gprof.txt *.out
